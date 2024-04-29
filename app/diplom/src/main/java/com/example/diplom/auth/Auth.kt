@@ -27,7 +27,7 @@ import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.diplom.routes.Routes
+import com.example.diplom.navigation.Routes
 
 
 //class AuthActivity : ComponentActivity() {
@@ -73,8 +73,7 @@ fun Auth(navController: NavHostController, viewModel: AuthViewModel) {
 
         // FIXME: Удалить кнопку навигации
         Button(onClick = {
-            navController.popBackStack(Routes.Auth.route, inclusive = true)
-
+            navController.graph.setStartDestination(Routes.Menu.route)
             navController.navigate(Routes.Menu.route)
         }) {
             Text(text = "Skip auth screen", color = Color.White)

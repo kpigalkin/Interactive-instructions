@@ -1,4 +1,4 @@
-package com.example.diplom.routes
+package com.example.diplom.navigation
 
 sealed class Routes(val route: String) {
     object Logs: Routes("logs")
