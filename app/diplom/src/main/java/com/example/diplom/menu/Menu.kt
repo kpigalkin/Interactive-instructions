@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.diplom.routes.Routes
+import com.example.diplom.navigation.Routes
 
 @Composable
 fun Menu(navController: NavHostController) {
