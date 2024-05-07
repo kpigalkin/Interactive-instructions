@@ -19,14 +19,19 @@ import com.example.diplom.logs.Logs
 import com.example.diplom.menu.Menu
 import com.example.diplom.navigation.Routes
 import com.example.diplom.scan.Scan
+import com.example.diplom.storage.Dependencies
+import com.example.diplom.storage.entities.DetailsEntity
+import com.example.diplom.storage.entities.ProductEntity
 import com.example.diplom.ui.theme.DiplomaTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Dependencies.init(applicationContext)
+
         setContent {
             DiplomaTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -35,7 +40,58 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        fillDatabase()
     }
+
+    private fun fillDatabase() {
+        val products = listOf<ProductEntity>(
+            ProductEntity(link = "http://1", description = "product 1"),
+            ProductEntity(link = "http://2", description = "product 2"),
+            ProductEntity(link = "http://3", description = "product 3"),
+            ProductEntity(link = "http://4", description = "product 4"),
+            ProductEntity(link = "http://5", description = "product 5"),
+            ProductEntity(link = "http://6", description = "product 6"),
+            ProductEntity(link = "http://7", description = "product 7"),
+            ProductEntity(link = "http://8", description = "product 8"),
+            ProductEntity(link = "http://9", description = "product 9")
+        )
+
+        val details = listOf<DetailsEntity>(
+            DetailsEntity(title = "Шкант", count = 8982),
+            DetailsEntity(title = "Левая дверца", count = 1),
+            DetailsEntity(title = "Правая дверца", count = 8),
+            DetailsEntity(title = "Дверная петля", count = 120),
+            DetailsEntity(title = "Крышка", count = 2),
+            DetailsEntity(title = "Полка центральная", count = 52)
+        )
+//        lifecycleScope.launch {
+//            products.forEach {
+//                Dependencies.repository.insertProduct(it)
+//            }
+//
+//            details.forEach {
+//                Dependencies.repository.insertDetail(it)
+//            }
+//        }
+
+//        val detailsInProducts = listOf<ProductDetails>(
+//            ProductDetails(id = 0, idProduct = 1, idDetail = 1, count = 55),
+//            ProductDetails(id = 0, idProduct = 1, idDetail = 2, count = 1),
+//            ProductDetails(id = 0, idProduct = 1, idDetail = 3, count = 1),
+//            ProductDetails(id = 0, idProduct = 2, idDetail = 1, count = 55),
+//            ProductDetails(id = 0, idProduct = 2, idDetail = 4, count = 1),
+//            ProductDetails(id = 0, idProduct = 2, idDetail = 5, count = 1),
+//            ProductDetails(id = 0, idProduct = 3, idDetail = 1, count = 55),
+//            ProductDetails(id = 0, idProduct = 3, idDetail = 3, count = 8),
+//            ProductDetails(id = 0, idProduct = 3, idDetail = 5, count = 9)
+//        )
+//        lifecycleScope.launch {
+//            detailsInProducts.forEach {
+//                Dependencies.repository.insertProductDetails(it)
+//            }
+//        }
+    }
+
 }
 
 @Composable
