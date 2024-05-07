@@ -18,7 +18,7 @@ import com.example.diplom.instructions.Instructions
 import com.example.diplom.logs.Logs
 import com.example.diplom.menu.Menu
 import com.example.diplom.navigation.Routes
-import com.example.diplom.scan.Scan
+import com.example.diplom.scan.CameraPreview
 import com.example.diplom.storage.Dependencies
 import com.example.diplom.storage.entities.DetailsEntity
 import com.example.diplom.storage.entities.ProductEntity
@@ -129,7 +129,7 @@ fun NavGraph(navController: NavHostController) {
         }
 
         composable(Routes.Scan.route) {
-            Scan()
+            CameraPreview(navController = navController)
         }
     }
 }

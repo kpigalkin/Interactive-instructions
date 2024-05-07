@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.diplom.navigation.Routes
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 @Composable
 fun Menu(navController: NavHostController) {
@@ -26,7 +27,6 @@ fun Menu(navController: NavHostController) {
     ) {
 
         Column {
-
             Button(onClick = {
                 navController.navigate(Routes.Scan.route)
             }) {

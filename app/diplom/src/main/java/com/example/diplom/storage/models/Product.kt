@@ -3,7 +3,7 @@ package com.example.diplom.storage.models
 import com.example.diplom.storage.entities.ProductEntity
 
 data class Product(
-    val id: Long,
+    val id: Long = 0,
     val link: String,
     val description: String
 )
