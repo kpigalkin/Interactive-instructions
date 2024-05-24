@@ -1,5 +1,6 @@
 package com.example.diplom
 
+import MenuViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,14 +17,18 @@ import androidx.navigation.compose.rememberNavController
 import com.example.diplom.auth.Auth
 import com.example.diplom.auth.AuthViewModel
 import com.example.diplom.instructions.Instructions
+import com.example.diplom.instructions.InstructionsViewModel
 import com.example.diplom.logs.Logs
 import com.example.diplom.menu.Menu
 import com.example.diplom.navigation.Routes
-import com.example.diplom.scan.CameraPreview
+import com.example.diplom.scan.Scan
+import com.example.diplom.scan.ScanViewModel
 import com.example.diplom.storage.Dependencies
-import com.example.diplom.storage.entities.DetailsEntity
-import com.example.diplom.storage.entities.ProductEntity
+import com.example.diplom.storage.models.Detail
+import com.example.diplom.storage.models.Product
+import com.example.diplom.storage.models.ProductDetails
 import com.example.diplom.ui.theme.DiplomaTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,58 +46,92 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        fillDatabase()
+//        fillDatabase()
     }
 
     private fun fillDatabase() {
-        val products = listOf<ProductEntity>(
-            ProductEntity(link = "http://1", description = "product 1"),
-            ProductEntity(link = "http://2", description = "product 2"),
-            ProductEntity(link = "http://3", description = "product 3"),
-            ProductEntity(link = "http://4", description = "product 4"),
-            ProductEntity(link = "http://5", description = "product 5"),
-            ProductEntity(link = "http://6", description = "product 6"),
-            ProductEntity(link = "http://7", description = "product 7"),
-            ProductEntity(link = "http://8", description = "product 8"),
-            ProductEntity(link = "http://9", description = "product 9")
+        val products = listOf<Product>(
+            Product(
+                link = "https://ietm.igatec.com/PROMO/IETM_Display/Serve?page=object&oId=D7D98E1D-F729-422D-A878-1ABEF9557B60",
+                description = "Замена фильтра насосной станции"
+            ),
+            Product(
+                link = "https://ietm.igatec.com/PROMO/IETM_Display/Serve?page=object&oId=EC2DC40B-20B6-4431-876B-B985A1DC958C",
+                description = "Снятие узлов опрокидывающего механизма с самосвала"
+            ),
+            Product(
+                link = "https://ietm.igatec.com/PROMO/IETM_Display/Serve?page=object&oId=46362AAA-5C70-4D7F-AD8E-683C4FE1E568",
+                description = "Разборка цилиндра опрокидывающего механизма"
+            ),
+            Product(
+                link = "https://ietm.igatec.com/PROMO/IETM_Display/Serve?page=main",
+                description = "Сборка комода №0001"
+            ),
+            Product(
+                link = "https://ietm.igatec.com/PROMO/IETM_Display/Serve?page=main",
+                description = "Сборка шкафа-купе №1231"
+            ),
+            Product(
+                link = "https://ietm.igatec.com/PROMO/IETM_Display/Serve?page=main",
+                description = "Сборка тумбы №0012"
+            ),
+            Product(
+                link = "https://ietm.igatec.com/PROMO/IETM_Display/Serve?page=main",
+                description = "Сборка тумбы №0981"
+            ),
         )
 
-        val details = listOf<DetailsEntity>(
-            DetailsEntity(title = "Шкант", count = 8982),
-            DetailsEntity(title = "Левая дверца", count = 1),
-            DetailsEntity(title = "Правая дверца", count = 8),
-            DetailsEntity(title = "Дверная петля", count = 120),
-            DetailsEntity(title = "Крышка", count = 2),
-            DetailsEntity(title = "Полка центральная", count = 52)
-        )
-//        lifecycleScope.launch {
-//            products.forEach {
-//                Dependencies.repository.insertProduct(it)
-//            }
-//
-//            details.forEach {
-//                Dependencies.repository.insertDetail(it)
-//            }
-//        }
+        val details = listOf<Detail>(
+            Detail(title = "Крышка", count = 10),
+            Detail(title = "Боковая стенка левая", count = 10),
+            Detail(title = "Полка боковая", count = 12),
+            Detail(title = "Внутреняяя стенка левая", count = 11),
+            Detail(title = "Боковая стенка правая", count = 16),
+            Detail(title = "Внутреняя стенка правая", count = 6),
+            Detail(title = "Полка центральная", count = 3),
+            Detail(title = "Цоколь", count = 44),
+            Detail(title = "Задняя стенка", count = 80),
+            Detail(title = "Ответная планка дверной петли", count = 12),
+            Detail(title = "Дверная петля", count = 2),
+            Detail(title = "Дверца левая", count = 10),
+            Detail(title = "Дверца правая", count = 10),
+            Detail(title = "Стяжка мебельная шурупная 5x50", count = 9000),
+            Detail(title = "Шуруп с полукруглой головкой 3.9x9.5", count = 5000),
+            )
 
-//        val detailsInProducts = listOf<ProductDetails>(
-//            ProductDetails(id = 0, idProduct = 1, idDetail = 1, count = 55),
-//            ProductDetails(id = 0, idProduct = 1, idDetail = 2, count = 1),
-//            ProductDetails(id = 0, idProduct = 1, idDetail = 3, count = 1),
-//            ProductDetails(id = 0, idProduct = 2, idDetail = 1, count = 55),
-//            ProductDetails(id = 0, idProduct = 2, idDetail = 4, count = 1),
-//            ProductDetails(id = 0, idProduct = 2, idDetail = 5, count = 1),
-//            ProductDetails(id = 0, idProduct = 3, idDetail = 1, count = 55),
-//            ProductDetails(id = 0, idProduct = 3, idDetail = 3, count = 8),
-//            ProductDetails(id = 0, idProduct = 3, idDetail = 5, count = 9)
-//        )
-//        lifecycleScope.launch {
-//            detailsInProducts.forEach {
-//                Dependencies.repository.insertProductDetails(it)
-//            }
-//        }
+        val detailsInProducts = listOf<ProductDetails>(
+            ProductDetails(idProduct = 4, idDetail = 1, count = 1),
+            ProductDetails(idProduct = 4, idDetail = 2, count = 1),
+            ProductDetails(idProduct = 4, idDetail = 3, count = 2),
+            ProductDetails(idProduct = 4, idDetail = 4, count = 1),
+            ProductDetails(idProduct = 4, idDetail = 5, count = 1),
+            ProductDetails(idProduct = 4, idDetail = 6, count = 1),
+            ProductDetails(idProduct = 4, idDetail = 7, count = 2),
+            ProductDetails(idProduct = 4, idDetail = 8, count = 2),
+            ProductDetails(idProduct = 4, idDetail = 9, count = 1),
+            ProductDetails(idProduct = 4, idDetail = 10, count = 4),
+            ProductDetails(idProduct = 4, idDetail = 11, count = 4),
+            ProductDetails(idProduct = 4, idDetail = 12, count = 1),
+            ProductDetails(idProduct = 4, idDetail = 13, count = 1),
+            ProductDetails(idProduct = 4, idDetail = 14, count = 76),
+            ProductDetails(idProduct = 4, idDetail = 15, count = 16)
+        )
+
+
+        lifecycleScope.launch {
+            products.forEach {
+                Dependencies.repository.insertProduct(it)
+            }
+
+            details.forEach {
+                Dependencies.repository.insertDetail(it)
+            }
+
+            detailsInProducts.forEach {
+                Dependencies.repository.insertProductDetails(it)
+            }
+        }
     }
-
 }
 
 @Composable
@@ -106,22 +146,20 @@ fun ScreenMain() {
 
 @Composable
 fun NavGraph(navController: NavHostController) {
-    var authViewModel = AuthViewModel(navController)
-
     NavHost(
         navController = navController,
         startDestination = Routes.Auth.route
     ) {
         composable(Routes.Auth.route) {
-            Auth(viewModel = authViewModel)
+            Auth(viewModel = AuthViewModel(navController))
         }
 
         composable(Routes.Menu.route) {
-            Menu(navController = navController)
+            Menu(viewModel = MenuViewModel(navController))
         }
 
         composable(Routes.Instructions.route) {
-            Instructions()
+            Instructions(viewModel = InstructionsViewModel())
         }
 
         composable(Routes.Logs.route) {
@@ -129,7 +167,7 @@ fun NavGraph(navController: NavHostController) {
         }
 
         composable(Routes.Scan.route) {
-            CameraPreview(navController = navController)
+            Scan(viewModel = ScanViewModel(navController))
         }
     }
 }

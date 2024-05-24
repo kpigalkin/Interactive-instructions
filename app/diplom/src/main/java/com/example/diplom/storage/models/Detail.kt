@@ -3,14 +3,14 @@ package com.example.diplom.storage.models
 import com.example.diplom.storage.entities.DetailsEntity
 
 data class Detail(
-    val id: Long,
+    val id: Long = 0,
     val title: String,
     val count: Int
 )
 
 fun Detail.toEntity(): DetailsEntity {
     return DetailsEntity(
-        id = 0,
+        id = this.id,
         title = this.title,
         count = this.count
     )

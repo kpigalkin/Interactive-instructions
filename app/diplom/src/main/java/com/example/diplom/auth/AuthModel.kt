@@ -11,7 +11,7 @@ class AuthModel: AuthModelInterface {
     override fun auth(userLogin: String, userPassword: String): Boolean {
         val login = "admin"
         val password = "admin"
-//        return userLogin == login && userPassword == password
-        return true // TODO: Delete
+        return userLogin == login && userPassword == password
+//        return true // TODO: Delete
     }
 }
