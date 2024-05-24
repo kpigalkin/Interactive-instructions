@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -88,7 +89,8 @@ fun ColumnScope.AuthFields(
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Email,
             imeAction = ImeAction.Next
-        )
+        ),
+        testTag = "loginForm"
     )
 
     AuthField(
@@ -96,7 +98,8 @@ fun ColumnScope.AuthFields(
         onValueChange = setPassword,
         label = { Text("Enter your password") },
         visualTransformation = PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        testTag = "passwordForm"
     )
 
     TextButton(
@@ -115,14 +118,16 @@ fun AuthField(
     onValueChange: (String) -> Unit,
     label: @Composable () -> Unit,
     visualTransformation: VisualTransformation = PasswordVisualTransformation(),
-    keyboardOptions: KeyboardOptions
+    keyboardOptions: KeyboardOptions,
+    testTag: String
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = label,
         visualTransformation = visualTransformation,
-        keyboardOptions = keyboardOptions
+        keyboardOptions = keyboardOptions,
+        modifier = Modifier.testTag(testTag)
     )
 }
 
@@ -131,6 +136,7 @@ fun AuthSignButton(onClick: () -> Unit) {
     Button(
         onClick = onClick,
         modifier = Modifier
+            .testTag("signInButton")
             .fillMaxWidth()
     ) {
         Text("Sign in")
@@ -148,7 +154,8 @@ fun ThrowAlert(message: String, onClick: () -> Unit) {
             Button(onClick = onClick) {
                 Text("Try again")
             }
-        }
+        },
+        modifier = Modifier.testTag("errorMessage")
     )
 }
 

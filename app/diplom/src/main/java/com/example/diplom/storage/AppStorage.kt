@@ -36,7 +36,7 @@ object Dependencies {
         Room.databaseBuilder(
             context = applicationContext,
             klass = AppStorage::class.java,
-            name = "database.db"
+            name = "mydb4.db"
         ).build()
     }
 

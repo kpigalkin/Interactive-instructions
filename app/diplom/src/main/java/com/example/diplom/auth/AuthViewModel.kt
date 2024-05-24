@@ -10,8 +10,8 @@ import com.example.diplom.navigation.Routes
 
 class AuthViewModel(navController: NavHostController): ViewModel() {
     private val _errorState = mutableStateOf<String?>(null)
-
-    val errorState: State<String?> get () = _errorState
+    val errorState: State<String?>
+        get () = _errorState
 
     private var authModel: AuthModelInterface = AuthModel()
     private lateinit var navController: NavHostController

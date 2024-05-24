@@ -6,12 +6,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +27,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.diplom.storage.Dependencies
 import com.example.diplom.storage.models.Detail
 import com.example.diplom.storage.models.Product
@@ -37,12 +43,17 @@ data class TableModel(
 )
 
 @Composable
-fun ProductCard(data: Product, onCloseClick: () -> Unit) {
+fun ProductCard(
+    data: Product,
+    onLinkClick: () -> Unit,
+    onClose: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0x99000000))
-            .clickable(onClick = onCloseClick)
+            .clickable(onClick = { onClose() })
+            .testTag("card")
     ) {
         Box(
             modifier = Modifier
@@ -51,17 +62,41 @@ fun ProductCard(data: Product, onCloseClick: () -> Unit) {
                 .size(350.dp)
                 .background(Color.White)
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = "ID: ${data.id}", style = MaterialTheme.typography.bodyMedium)
-                Text(text = "Link: ${data.link}", style = MaterialTheme.typography.bodyMedium)
-                Text(text = "Description: ${data.description}", style = MaterialTheme.typography.bodyMedium)
-
+            Column(modifier = Modifier
+                .padding(10.dp)
+                .align(Alignment.Center)
+            ) {
+                Text(
+                    text = "${data.description}",
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                OpenInstructionButton(url = data.link, onLinkClick = { onLinkClick() } )
+                Spacer(modifier = Modifier.height(2.dp))
                 ProductDetailContent(dataList = getDetailsData(forProduct = data))
-                android.util.Log.d("TAG", "${getDetailsData(forProduct = data)}")
             }
         }
     }
 }
+
+@Composable
+fun OpenInstructionButton(url: String, onLinkClick: () -> Unit) {
+    Button(
+        onClick = { onLinkClick() },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .padding(8.dp),
+        colors = ButtonDefaults.run { buttonColors(Color.Blue) },
+    ) {
+        Text(
+            text = "Open instruction",
+            color = Color.White,
+            fontSize = 16.sp
+        )
+    }
+}
+
 
 @Composable
 fun ProductDetailContent(dataList: List<TableModel>) {
@@ -71,10 +106,10 @@ fun ProductDetailContent(dataList: List<TableModel>) {
 
     LazyColumn {
         item {
-            Row {
-                ProductDetailRow(text = "name", weight = nameColomnWidth, style = MaterialTheme.typography.bodyMedium)
-                ProductDetailRow(text = "required", weight = requiredColomnWidth, style = MaterialTheme.typography.bodyMedium)
-                ProductDetailRow(text = "available", weight = availableColomnWidth, style = MaterialTheme.typography.bodyMedium)
+            Row(Modifier.background(Color.LightGray)) {
+                ProductDetailRow(text = "Наименование", weight = nameColomnWidth, style = MaterialTheme.typography.bodyMedium)
+                ProductDetailRow(text = "Сборка", weight = requiredColomnWidth, style = MaterialTheme.typography.bodyMedium)
+                ProductDetailRow(text = "На складе", weight = availableColomnWidth, style = MaterialTheme.typography.bodyMedium)
             }
         }
         items(dataList) { item ->
@@ -103,24 +138,6 @@ fun RowScope.ProductDetailRow(
             .weight(weight)
     )
 }
-
-//@Composable
-//fun RowScope.ProductDetailRow(
-//    item: TableModel,
-//    weight: Float
-//) {
-//    Column(
-//        modifier = Modifier
-//            .padding(16.dp)
-//            .fillMaxWidth()
-//            .weight(weight)
-//    ) {
-//        Text(text = item.detailName, style = MaterialTheme.typography.bodyMedium)
-//        Text(text = "${item.required}", style = MaterialTheme.typography.bodyMedium)
-//        Text(text = "${item.available}", style = MaterialTheme.typography.bodyMedium)
-//        Divider(color = Color.Black, thickness = 2.dp)
-//    }
-//}
 
 @Composable
 fun getDetailsData(forProduct: Product): List<TableModel> {

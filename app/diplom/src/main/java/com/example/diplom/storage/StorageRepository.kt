@@ -2,6 +2,7 @@ package com.example.diplom.storage
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.diplom.storage.entities.DetailsEntity
 import com.example.diplom.storage.entities.ProductDetailsEntity
@@ -16,16 +17,16 @@ import kotlinx.coroutines.withContext
 
 @Dao
 interface DAO {
-    // PUT
-    @Insert(entity = ProductEntity::class)
+
+    @Insert(entity = ProductEntity::class, onConflict = OnConflictStrategy.REPLACE)
     fun insertProduct(product: ProductEntity)
 
-    @Insert(entity = DetailsEntity::class)
+    @Insert(entity = DetailsEntity::class, onConflict = OnConflictStrategy.REPLACE)
     fun insertDetail(detail: DetailsEntity)
 
-    @Insert(entity = ProductDetailsEntity::class)
+    @Insert(entity = ProductDetailsEntity::class, onConflict = OnConflictStrategy.REPLACE)
     fun insertDetail(productDetails: ProductDetailsEntity)
-    // GET
+
     @Query("SELECT * FROM details")
     fun getDetails(): List<DetailsEntity>
 
@@ -37,7 +38,6 @@ interface DAO {
 }
 
 class StorageRepository(private val storage: DAO) {
-    // PUT
     suspend fun insertProduct(product: Product) {
         withContext(Dispatchers.IO) {
             storage.insertProduct(product.toEntity())
@@ -54,24 +54,19 @@ class StorageRepository(private val storage: DAO) {
         }
     }
 
-    // GET
     suspend fun getDetailsList(): List<Detail> {
         return withContext(Dispatchers.IO) {
             return@withContext storage.getDetails().toModels()
         }
     }
-
     suspend fun getProductList(): List<Product> {
         return withContext(Dispatchers.IO) {
             return@withContext storage.getProducts().toModels()
         }
     }
-
     suspend fun getProductDetailsList(): List<ProductDetails> {
         return withContext(Dispatchers.IO) {
             return@withContext storage.getProductDetails().toModels()
         }
     }
 }
-
-//  https://habr.com/ru/articles/713518/
