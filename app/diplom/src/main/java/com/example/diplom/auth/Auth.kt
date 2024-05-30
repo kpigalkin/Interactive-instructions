@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.example.diplom.auth
 
 import androidx.compose.foundation.layout.Arrangement
@@ -26,12 +24,15 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign.Companion.Center
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
 fun Auth(viewModel: AuthViewModel) {
+    val hintText = viewModel.hintText.value
+    val buttonText = viewModel.buttonText.value
+
     val errorState by remember {
         viewModel.errorState
     }
@@ -54,13 +55,15 @@ fun Auth(viewModel: AuthViewModel) {
             login = viewModel.login,
             password = viewModel.password,
             setLogin = { viewModel.login = it },
-            setPassword = { viewModel.password = it })
-        AuthSignButton {
-            viewModel.singInButtonClicked()
+            setPassword = { viewModel.password = it },
+            hintText = hintText,
+            onHintClick = { viewModel.hintButtonClicked() }
+            )
+        AuthSignButton(buttonText) {
+            viewModel.buttonClicked()
         }
     }
 }
-
 
 @Composable
 fun AuthTitle() {
@@ -70,7 +73,7 @@ fun AuthTitle() {
         fontWeight = FontWeight.Bold,
         maxLines = 2,
         lineHeight = 40.sp,
-        textAlign = Center,
+        textAlign = TextAlign.Center,
         modifier = Modifier.padding(top=20.dp, bottom = 20.dp)
     )
 }
@@ -81,11 +84,13 @@ fun ColumnScope.AuthFields(
     password: String,
     setLogin: (String) -> Unit,
     setPassword: (String) -> Unit,
-) {
+    hintText: String,
+    onHintClick: () -> Unit) {
     AuthField(
         value = login,
         onValueChange = setLogin,
-        label = { Text("Enter your login") },
+        label = { Text("Enter your email") },
+        visualTransformation = VisualTransformation.None,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Email,
             imeAction = ImeAction.Next
@@ -103,15 +108,16 @@ fun ColumnScope.AuthFields(
     )
 
     TextButton(
-        onClick = { /*TODO*/ },
+        onClick = { onHintClick() },
         modifier = Modifier
             .padding(bottom = 12.dp)
             .align(Alignment.End)
     ) {
-        Text("Forgot password?")
+        Text(hintText)
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AuthField(
     value: String,
@@ -132,14 +138,14 @@ fun AuthField(
 }
 
 @Composable
-fun AuthSignButton(onClick: () -> Unit) {
+fun AuthSignButton(text: String, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         modifier = Modifier
             .testTag("signInButton")
             .fillMaxWidth()
     ) {
-        Text("Sign in")
+        Text(text)
     }
 }
 
