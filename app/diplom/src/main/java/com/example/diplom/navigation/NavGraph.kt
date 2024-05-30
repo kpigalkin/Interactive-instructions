@@ -1,6 +1,8 @@
 package com.example.diplom.navigation
 
 import MenuViewModel
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -10,10 +12,12 @@ import com.example.diplom.auth.AuthViewModel
 import com.example.diplom.instructions.Instructions
 import com.example.diplom.instructions.InstructionsViewModel
 import com.example.diplom.logs.Logs
+import com.example.diplom.logs.LogsViewModel
 import com.example.diplom.menu.Menu
 import com.example.diplom.scan.Scan
 import com.example.diplom.scan.ScanViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavGraph(navController: NavHostController) {
     NavHost(
@@ -33,7 +37,7 @@ fun NavGraph(navController: NavHostController) {
         }
 
         composable(Routes.Logs.route) {
-            Logs()
+            Logs(LogsViewModel())
         }
 
         composable(Routes.Scan.route) {
