@@ -106,11 +106,11 @@ class ScanViewModel(navController: NavHostController): ViewModel() {
         viewModelScope.launch {
             Dependencies.repository.insertProduct(product)
         }
-//        _showCard.value = null
+        _showCard.value = null
     }
 
     fun onOpenCardClick() {
-        Log.d("Button", "pressed")
+//        _showCard.value = null
         _showCard.value = true
     }
 }

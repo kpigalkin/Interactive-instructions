@@ -1,7 +1,6 @@
 package com.example.diplom.scan
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.ViewGroup
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.Box
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,8 +31,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 fun Scan(viewModel: ScanViewModel) {
     val cameraPermissionState = rememberPermissionState(permission = viewModel.cameraPermissionState)
     val showCamera = remember { viewModel.showCamera }
-    val showCard = remember { viewModel.showCard }
-    val detectedLink by remember { viewModel.detectedLink }
+    val showCard by remember { viewModel.showCard }
 
     cameraPermissionState.let {
         viewModel.onPermission(it)
@@ -55,20 +54,26 @@ fun Scan(viewModel: ScanViewModel) {
     }
 
     showCard.let {
-        Log.d("showcard", "$it")
-        val link = detectedLink
-        if (link != null) {
-            NewProductCard(
-                link = link,
-                onSaveClicked = {
-                    val newProduct = Product(link = link, description = it)
-                    viewModel.onAddProductClick(newProduct)
-                    viewModel.onAction() },
-                onCloseClicked = {
-                    viewModel.onAction()
-                }
-            )
-        }
+        OpenNewCard(viewModel = viewModel)
+    }
+}
+
+@Composable
+fun OpenNewCard(viewModel: ScanViewModel) {
+    val detectedLink by remember { viewModel.detectedLink }
+
+    val link = detectedLink
+    if (link != null) {
+        NewProductCard(
+            link = link,
+            onSaveClicked = {
+                val newProduct = Product(link = link, description = it)
+                viewModel.onAddProductClick(newProduct)
+                viewModel.onAction() },
+            onCloseClicked = {
+                viewModel.onAction()
+            }
+        )
     }
 }
 
@@ -89,21 +94,21 @@ fun Camera(viewModel: ScanViewModel, onClick: () -> Unit) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val detectedLink by remember { viewModel.detectedLink }
 
-    val color = {
-        Log.d("linkcolor", "$detectedLink")
-        if (detectedLink != null) Color.Green else Color.Red
+    var color = Color.Red
+    detectedLink.let {
+        color = if (detectedLink != null) Color.Green else Color.Red
     }
 
     Column {
-//        Button(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(2.dp),
-//            colors = ButtonDefaults.buttonColors(color()),
-//            onClick = {onClick()}
-//        ) {
-//            Text(text = "Add new product")
-//        }
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(2.dp),
+            colors = ButtonDefaults.buttonColors(color),
+            onClick = {onClick()}
+        ) {
+            Text(text = "Add new product")
+        }
 
         AndroidView(
             factory = { androidViewContext ->
