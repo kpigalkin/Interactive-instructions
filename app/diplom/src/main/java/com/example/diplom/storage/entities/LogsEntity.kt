@@ -22,11 +22,10 @@ fun LogsEntity.toModel() = Log(
     link = this.link
 )
 
-fun List<LogsEntity>.toModels() = listOf(
+fun List<LogsEntity>.toModels() =
     this.map {
         Log(
             date = it.date,
             link = it.link
         )
     }
-)

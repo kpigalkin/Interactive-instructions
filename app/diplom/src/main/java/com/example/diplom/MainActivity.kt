@@ -1,51 +1,46 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.diplom
 
-import MenuViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.diplom.auth.Auth
-import com.example.diplom.auth.AuthViewModel
-import com.example.diplom.instructions.Instructions
-import com.example.diplom.instructions.InstructionsViewModel
-import com.example.diplom.logs.Logs
-import com.example.diplom.menu.Menu
-import com.example.diplom.navigation.Routes
-import com.example.diplom.scan.Scan
-import com.example.diplom.scan.ScanViewModel
+import com.example.diplom.navigation.NavGraph
 import com.example.diplom.storage.Dependencies
 import com.example.diplom.storage.models.Detail
 import com.example.diplom.storage.models.Product
 import com.example.diplom.storage.models.ProductDetails
 import com.example.diplom.ui.theme.DiplomaTheme
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
-class MainActivity : ComponentActivity() {
+class MainActivity: ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         Dependencies.init(applicationContext)
 
         setContent {
+            FirebaseAuth.getInstance().signOut()
             DiplomaTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ScreenMain()
+                    val navController = rememberNavController()
+                    NavGraph(navController = navController)
                 }
             }
         }
+
 //        fillDatabase()
     }
 
@@ -97,7 +92,7 @@ class MainActivity : ComponentActivity() {
             Detail(title = "Дверца правая", count = 10),
             Detail(title = "Стяжка мебельная шурупная 5x50", count = 9000),
             Detail(title = "Шуруп с полукруглой головкой 3.9x9.5", count = 5000),
-            )
+        )
 
         val detailsInProducts = listOf<ProductDetails>(
             ProductDetails(idProduct = 4, idDetail = 1, count = 1),
@@ -133,42 +128,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-@Composable
-fun ScreenMain() {
-    /*
-    TODO: Допилить авторизацию
-    val isUserAuthorized = false
-    */
-    val navController = rememberNavController()
-    NavGraph(navController = navController)
-}
-
-@Composable
-fun NavGraph(navController: NavHostController) {
-    NavHost(
-        navController = navController,
-        startDestination = Routes.Auth.route
-    ) {
-        composable(Routes.Auth.route) {
-            Auth(viewModel = AuthViewModel(navController))
-        }
-
-        composable(Routes.Menu.route) {
-            Menu(viewModel = MenuViewModel(navController))
-        }
-
-        composable(Routes.Instructions.route) {
-            Instructions(viewModel = InstructionsViewModel())
-        }
-
-        composable(Routes.Logs.route) {
-            Logs()
-        }
-
-        composable(Routes.Scan.route) {
-            Scan(viewModel = ScanViewModel(navController))
-        }
-    }
-}
-

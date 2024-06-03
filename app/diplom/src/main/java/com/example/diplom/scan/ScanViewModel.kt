@@ -8,34 +8,45 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.diplom.navigation.Routes
+import com.example.diplom.storage.Dependencies
+import com.example.diplom.storage.models.Product
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.common.util.concurrent.ListenableFuture
+import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class ScanViewModel(navController: NavHostController): ViewModel() {
-    var showCamera by mutableStateOf<Boolean>(false)
-    var showNewProductCard by mutableStateOf<String?>(null)
+
+    private val _showCamera = mutableStateOf<Boolean?>(null)
+    val showCamera: State<Boolean?> get () = _showCamera
+
+    private val _showCard = mutableStateOf<Boolean?>(null)
+    val showCard: State<Boolean?> get () = _showCard
+
+    private val _detectedLink = mutableStateOf<String?>(null)
+    val detectedLink: State<String?> get () = _detectedLink
 
     val cameraPermissionState by mutableStateOf(Manifest.permission.CAMERA)
 
-    private lateinit var navController: NavHostController
+    private var navController: NavHostController
 
     init {
         this.navController = navController
     }
 
     fun onLinkDetection(link: String?) {
-        showNewProductCard = link
+        _detectedLink.value = link
     }
 
     fun onAction() {
@@ -45,7 +56,7 @@ class ScanViewModel(navController: NavHostController): ViewModel() {
     @OptIn(ExperimentalPermissionsApi::class)
     fun onPermission(state: PermissionState) {
         if (state.hasPermission) {
-            showCamera = true
+            _showCamera.value = true
         }
     }
 
@@ -65,9 +76,8 @@ class ScanViewModel(navController: NavHostController): ViewModel() {
             val barcodeAnalyser = BarCodeAnalyser { barcodes ->
                 barcodes.firstNotNullOf { barcode ->
                     barcode.rawValue.let { barcodeValue ->
-                        if (showNewProductCard == null) {
-                            onLinkDetection(barcodeValue)
-                        }
+                        Log.d("analyze", "DETECTED")
+                        onLinkDetection(barcodeValue)
                     }
                 }
             }
@@ -90,5 +100,17 @@ class ScanViewModel(navController: NavHostController): ViewModel() {
                 Log.d("TAG", "CameraPreview: ${e.localizedMessage}")
             }
         }, ContextCompat.getMainExecutor(context))
+    }
+
+    fun onAddProductClick(product: Product) {
+        viewModelScope.launch {
+            Dependencies.repository.insertProduct(product)
+        }
+        _showCard.value = null
+    }
+
+    fun onOpenCardClick() {
+//        _showCard.value = null
+        _showCard.value = true
     }
 }

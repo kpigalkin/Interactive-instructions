@@ -5,10 +5,12 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.diplom.storage.entities.DetailsEntity
+import com.example.diplom.storage.entities.LogsEntity
 import com.example.diplom.storage.entities.ProductDetailsEntity
 import com.example.diplom.storage.entities.ProductEntity
 import com.example.diplom.storage.entities.toModels
 import com.example.diplom.storage.models.Detail
+import com.example.diplom.storage.models.Log
 import com.example.diplom.storage.models.Product
 import com.example.diplom.storage.models.ProductDetails
 import com.example.diplom.storage.models.toEntity
@@ -27,6 +29,9 @@ interface DAO {
     @Insert(entity = ProductDetailsEntity::class, onConflict = OnConflictStrategy.REPLACE)
     fun insertDetail(productDetails: ProductDetailsEntity)
 
+    @Insert(entity = LogsEntity::class, onConflict = OnConflictStrategy.REPLACE)
+    fun insertLog(log: LogsEntity)
+
     @Query("SELECT * FROM details")
     fun getDetails(): List<DetailsEntity>
 
@@ -35,9 +40,18 @@ interface DAO {
 
     @Query("SELECT * FROM product_details")
     fun getProductDetails(): List<ProductDetailsEntity>
+
+    @Query("SELECT * FROM logs")
+    fun getLogs(): List<LogsEntity>
 }
 
 class StorageRepository(private val storage: DAO) {
+
+    suspend fun insertLog(log: Log) {
+        withContext(Dispatchers.IO) {
+            storage.insertLog(log.toEntity())
+        }
+    }
     suspend fun insertProduct(product: Product) {
         withContext(Dispatchers.IO) {
             storage.insertProduct(product.toEntity())
@@ -67,6 +81,12 @@ class StorageRepository(private val storage: DAO) {
     suspend fun getProductDetailsList(): List<ProductDetails> {
         return withContext(Dispatchers.IO) {
             return@withContext storage.getProductDetails().toModels()
+        }
+    }
+
+    suspend fun getLogsList(): List<Log> {
+        return withContext(Dispatchers.IO) {
+            return@withContext storage.getLogs().toModels()
         }
     }
 }
