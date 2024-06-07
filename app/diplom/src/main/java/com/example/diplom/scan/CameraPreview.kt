@@ -10,13 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -31,7 +28,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 fun Scan(viewModel: ScanViewModel) {
     val cameraPermissionState = rememberPermissionState(permission = viewModel.cameraPermissionState)
     val showCamera = remember { viewModel.showCamera }
-    val showCard by remember { viewModel.showCard }
+    val detectedLink = remember { viewModel.detectedLink }
 
     cameraPermissionState.let {
         viewModel.onPermission(it)
@@ -40,7 +37,7 @@ fun Scan(viewModel: ScanViewModel) {
     showCamera.let {
         if (it.value == true) {
             Column(modifier = Modifier.fillMaxSize()) {
-                Camera(viewModel, onClick = {viewModel.onOpenCardClick()})
+                Camera(viewModel)
             }
         } else {
             Box(
@@ -52,29 +49,23 @@ fun Scan(viewModel: ScanViewModel) {
             }
         }
     }
-
-    showCard.let {
-        OpenNewCard(viewModel = viewModel)
+    detectedLink.value?.let {
+        OpenNewCard(viewModel = viewModel, link = it)
     }
 }
 
 @Composable
-fun OpenNewCard(viewModel: ScanViewModel) {
-    val detectedLink by remember { viewModel.detectedLink }
-
-    val link = detectedLink
-    if (link != null) {
-        NewProductCard(
-            link = link,
-            onSaveClicked = {
-                val newProduct = Product(link = link, description = it)
-                viewModel.onAddProductClick(newProduct)
-                viewModel.onAction() },
-            onCloseClicked = {
-                viewModel.onAction()
-            }
-        )
-    }
+fun OpenNewCard(viewModel: ScanViewModel, link: String) {
+    NewProductCard(
+        link = link,
+        onSaveClicked = {
+            val newProduct = Product(link = link, description = it)
+            viewModel.onAddProductClick(newProduct)
+            viewModel.onAction() },
+        onCloseClicked = {
+            viewModel.onAction()
+        }
+    )
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -89,27 +80,11 @@ fun PermissionButton(cameraPermissionState: PermissionState) {
 
 @SuppressLint("PermissionLaunchedDuringComposition")
 @Composable
-fun Camera(viewModel: ScanViewModel, onClick: () -> Unit) {
+fun Camera(viewModel: ScanViewModel) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val detectedLink by remember { viewModel.detectedLink }
-
-    var color = Color.Red
-    detectedLink.let {
-        color = if (detectedLink != null) Color.Green else Color.Red
-    }
 
     Column {
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(2.dp),
-            colors = ButtonDefaults.buttonColors(color),
-            onClick = {onClick()}
-        ) {
-            Text(text = "Add new product")
-        }
-
         AndroidView(
             factory = { androidViewContext ->
                 PreviewView(androidViewContext).apply {

@@ -31,9 +31,6 @@ class ScanViewModel(navController: NavHostController): ViewModel() {
     private val _showCamera = mutableStateOf<Boolean?>(null)
     val showCamera: State<Boolean?> get () = _showCamera
 
-    private val _showCard = mutableStateOf<Boolean?>(null)
-    val showCard: State<Boolean?> get () = _showCard
-
     private val _detectedLink = mutableStateOf<String?>(null)
     val detectedLink: State<String?> get () = _detectedLink
 
@@ -45,7 +42,7 @@ class ScanViewModel(navController: NavHostController): ViewModel() {
         this.navController = navController
     }
 
-    fun onLinkDetection(link: String?) {
+    private fun onLinkDetection(link: String?) {
         _detectedLink.value = link
     }
 
@@ -74,9 +71,8 @@ class ScanViewModel(navController: NavHostController): ViewModel() {
             }
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
             val barcodeAnalyser = BarCodeAnalyser { barcodes ->
-                barcodes.firstNotNullOf { barcode ->
+                barcodes.firstNotNullOfOrNull { barcode ->
                     barcode.rawValue.let { barcodeValue ->
-                        Log.d("analyze", "DETECTED")
                         onLinkDetection(barcodeValue)
                     }
                 }
@@ -106,11 +102,5 @@ class ScanViewModel(navController: NavHostController): ViewModel() {
         viewModelScope.launch {
             Dependencies.repository.insertProduct(product)
         }
-        _showCard.value = null
-    }
-
-    fun onOpenCardClick() {
-//        _showCard.value = null
-        _showCard.value = true
     }
 }

@@ -27,19 +27,11 @@ class BarCodeAnalyser(
                 val imageToProcess = InputImage.fromMediaImage(imageToAnalyze, image.imageInfo.rotationDegrees)
 
                 barcodeScanner.process(imageToProcess)
-                    .addOnSuccessListener { barcodes ->
-                        if (barcodes.isNotEmpty()) {
-                            onBarcodeDetected(barcodes)
-                        } else {
-                            Log.d("TAG", "analyze: No barcode Scanned")
-                        }
-                    }
+                    .addOnSuccessListener { onBarcodeDetected(it) }
                     .addOnFailureListener { exception ->
                         Log.d("TAG", "BarcodeAnalyser: Something went wrong $exception")
                     }
-                    .addOnCompleteListener {
-                        image.close()
-                    }
+                    .addOnCompleteListener { image.close() }
             }
             lastAnalyzedTimeStamp = currentTimestamp
         } else {
