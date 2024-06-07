@@ -2,7 +2,6 @@ package com.example.diplom.instructions
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -62,12 +61,10 @@ fun Instructions(viewModel: InstructionsViewModel) {
     }
 
     fun openLink() {
-        Log.d("openLink", "openLink")
         showLink.value = selectedItem.value?.link
     }
 
     selectedItem.value?.let {
-        Log.d("IT", "${it}")
         val link = it.link
         ProductCard(
             data = it,

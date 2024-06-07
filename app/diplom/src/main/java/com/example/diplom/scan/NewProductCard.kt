@@ -45,7 +45,7 @@ fun NewProductCard(
             modifier = Modifier
                 .align(Alignment.Center)
                 .padding(16.dp)
-                .size(350.dp)
+                .size(440.dp)
                 .background(Color.White)
         ) {
             Column(
@@ -79,7 +79,7 @@ fun NewProductCard(
 
                 TextField(
                     value = link,
-                    onValueChange = { /* Ничего не делаем, так как это только для отображения */ },
+                    onValueChange = { /* */ },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 16.dp)
